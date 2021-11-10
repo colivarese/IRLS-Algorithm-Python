@@ -5,7 +5,8 @@ import pandas as pd
 def IRLS(X, labels, iters:int):
     D = X.shape[1]
     W = np.array([0]*X.shape[1], dtype='float64')
-    y_bar = np.mean(labels) - 0.2
+    #y_bar = np.mean(labels) - 0.2
+    y_bar = 0.1
     w_o = math.log(y_bar/(1-y_bar)) # our intitial estimate of the coefficients
     for _ in range(iters):
         eta_i = w_o + np.dot(X, W)
@@ -59,15 +60,20 @@ def loadData():
         tmp = pd.read_csv(path + 'testLabels.csv').columns
         tmp = [float(i) for i in tmp]
         testLabels = np.insert(testLabels, 0, tmp, axis=0)
+        testLabels = testLabels[:,0]
 
-        #trainData = np.c_[ np.ones(trainData.shape[0]) , trainData] 
-        #testData = np.c_[ np.ones(testData.shape[0]) , testData]
 
         for i, n in enumerate(trainLabels):
             if n == 5:
                 trainLabels[i] = 0
             else:
                 trainLabels[i] = 1
+
+        for i, n in enumerate(testLabels):
+            if n == 5:
+                testLabels[i] = 0
+            else:
+                testLabels[i] = 1
 
     return trainData, trainLabels, testData, testLabels
 
@@ -78,9 +84,9 @@ def predict(W, data):
     pred = odds / (1 + odds)
     
     if pred >= 0.5:
-        return 6
+        return 1
     else:
-        return 5
+        return 0
 
 def testResult(W, X, y):
     s = 0
